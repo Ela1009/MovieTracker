@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reviews for [[${movie.title}]]</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+    <style>
+        .back-button {
+            margin-top: 30px;
+            display: inline-block;
+            background-color: transparent;
+            color: #d8b9f2;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="main-content">
+    <!-- ⬅️ Gumb za povratak -->
+    <a th:href="@{/movies}" class="back-button" style="margin-bottom: 20px; display: inline-block;">
+        ← Back to Browse Movies
+    </a>
+
+    <h2 th:text="'Reviews for: ' + ${movie.title}">Movie Title</h2>
+
+    <div th:if="${reviews.isEmpty()}">
+        <p>No reviews yet.</p>
+    </div>
+
+    <div th:each="review : ${reviews}" style="margin-bottom: 30px; border-bottom: 1px solid #7a4fca; padding-bottom: 20px;">
+        <p><strong>Critic:</strong> <span th:text="${review.critic.username}">username</span></p>
+        <p><strong>Rating:</strong> <span th:text="${review.rating}">8</span>/10</p>
+        <p><strong>Review:</strong><br><span th:text="${review.reviewText}"></span></p>
+    </div>
+</div>
+</body>
+</html>

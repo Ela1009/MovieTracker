@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reviewer Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="main-content">
+    <h1>Hello <span th:text="${username}">User</span>!</h1>
+    <div class="dashboard-section">
+        <h2>My Latest Review</h2>
+
+        <div th:if="${latestReview != null}" style="display: flex; gap: 20px; align-items: flex-start; margin-top: 20px;">
+
+            <!-- Poster slike -->
+            <img th:src="${latestReview.movie.posterUrl}" alt="Movie Poster"
+                 style="height: 200px; border-radius: 6px; border: 2px solid #7a4fca;" />
+
+            <!-- Detalji recenzije -->
+            <div>
+                <p><strong>Movie:</strong> <span th:text="${latestReview.movie.title}"></span></p>
+                <p><strong>Rating:</strong> <span th:text="${latestReview.rating}"></span>/10</p>
+                <p><strong>Review:</strong> <span th:text="${latestReview.reviewText}"></span></p>
+                <p><em>Posted on:</em> <span th:text="${#temporals.format(latestReview.createdAt, 'dd.MM.yyyy HH:mm')}"></span></p>
+            </div>
+        </div>
+
+        <div th:if="${latestReview == null}">
+            <p>You haven't written any reviews yet.</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+    <style>
+        .recent-movie {
+            background-color: #1c1c1c;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #7a4fca;
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            max-width: 700px;
+        }
+
+        .recent-movie img {
+            height: 200px;
+            border-radius: 6px;
+        }
+
+        .recent-movie h2 {
+            margin: 0;
+            color: #d8b9f2;
+        }
+
+        .recent-movie p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigacija s lijeve strane -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Glavni sadržaj -->
+<div class="main-content">
+    <h1>Hello, <span th:text="${username}">User</span>!</h1>
+
+    <h2>Recently added movies</h2>
+
+    <div th:if="${recentMovie != null}" class="recent-movie">
+        <img th:src="${recentMovie.posterUrl}" alt="Poster" />
+        <div>
+            <h2 th:text="${recentMovie.title}">Film</h2>
+            <p><strong>Genre:</strong> <span th:text="${recentMovie.genre}"></span></p>
+            <p><strong>Director:</strong> <span th:text="${recentMovie.director}"></span></p>
+            <p><strong>Year:</strong> <span th:text="${recentMovie.releaseYear}"></span></p>
+            <p><strong>Description:</strong> <span th:text="${recentMovie.description}"></span></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Movies</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+    <style>
+        .movie-card {
+            display: flex;
+            gap: 20px;
+            background-color: #1c1c1c;
+            border: 2px solid #7a4fca;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .movie-card img {
+            height: 200px;
+            border-radius: 6px;
+        }
+
+        .movie-details {
+            flex: 1;
+        }
+
+        .movie-details h2 {
+            color: #d8b9f2;
+            margin: 0;
+        }
+
+        .movie-details p {
+            margin: 4px 0;
+        }
+
+        .movie-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .watchlist-button {
+            background-color: #7a4fca;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .watchlist-button:hover {
+            background-color: #925eff;
+        }
+
+        .search-form {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+
+        .search-form button {
+            padding: 8px 16px;
+            background-color: #7a4fca;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+<!-- Navigacija -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Glavni sadržaj -->
+<div class="main-content">
+    <h1>All movies</h1>
+
+    <form th:action="@{/movies}" method="get" class="search-form">
+        <input type="text" name="keyword" placeholder="Search by name" th:value="${keyword}" />
+        <input type="text" name="director" placeholder="Search by director" th:value="${director}" />
+        <button type="submit">Search</button>
+    </form>
+
+
+
+    <div th:each="movie : ${movies}" class="movie-card">
+        <img th:src="${movie.posterUrl}" alt="Poster" />
+        <div class="movie-details">
+            <h2 th:text="${movie.title}">Title</h2>
+            <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+            <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
+            <p><strong>Release year:</strong> <span th:text="${movie.releaseYear}"></span></p>
+
+
+
+            <div class="movie-buttons">
+                <form th:action="@{'/movies/add-to-watchlist/' + ${movie.id}}" method="post"
+                      th:if="${!watchlistMovies.contains(movie)}" style="display: inline;">
+                    <button class="watchlist-button" type="submit">Add to Watchlist</button>
+                </form>
+
+                <a th:href="@{/critic/reviews/movie/{id}(id=${movie.id})}" class="watchlist-button"
+                   th:classappend="${!watchlistMovies.contains(movie)} ? '' : 'only-button'">
+                    View Reviews
+                </a>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

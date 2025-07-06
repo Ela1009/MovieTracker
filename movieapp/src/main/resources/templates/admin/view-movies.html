@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pregled filmova</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}" />
+    <style>
+        .movie-card {
+            background-color: #1c1c1c;
+            border: 2px solid #7a4fca;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .movie-card img {
+            height: 200px;
+            border-radius: 6px;
+        }
+
+        .movie-details {
+            flex-grow: 1;
+        }
+
+        .movie-details h2 {
+            margin-top: 0;
+            color: #d8b9f2;
+        }
+
+        .movie-details p {
+            margin: 5px 0;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            color: #d8b9f2;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            color: #ffffff;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<!-- Navigacija -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Glavni sadržaj -->
+<div class="main-content">
+    <h1>All movies</h1>
+
+    <div th:each="movie : ${movies}" class="movie-card">
+        <img th:src="${movie.posterUrl}" alt="Poster" th:if="${movie.posterUrl != null}" />
+        <div class="movie-details">
+            <h2 th:text="${movie.title}">Title</h2>
+            <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+            <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
+            <p><strong>Year:</strong> <span th:text="${movie.releaseYear}"></span></p>
+            <p><strong>Description:</strong> <span th:text="${movie.description}"></span></p>
+        </div>
+    </div>
+
+    <a th:href="@{/admin/dashboard}" class="back-button">← Return to dashboard</a>
+</div>
+
+</body>
+</html>

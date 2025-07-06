@@ -1,0 +1,63 @@
+<!-- templates/fragments/navbar.html -->
+<div th:fragment="navbar">
+    <div class="sidebar">
+
+        <!-- Prikaz uloge korisnika -->
+        <div class="role-label"
+             th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+            <strong style="color: #d8b9f2;">Role: ADMIN</strong>
+        </div>
+
+        <div class="role-label"
+             th:if="${#authorization.expression('hasRole(''CRITIC'')')}">
+            <strong style="color: #d8b9f2;">Role: CRITIC</strong>
+        </div>
+
+        <div class="role-label"
+             th:if="${#authorization.expression('hasRole(''USER'')') and !#authorization.expression('hasRole(''CRITIC'')')}">
+            <strong style="color: #d8b9f2;">Role: USER</strong>
+        </div>
+
+        <!-- ADMIN navigacija -->
+        <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" style="margin-top: 30px;">
+            <a class="nav-button" th:href="@{/admin/dashboard}">Dashboard</a>
+            <a class="nav-button" th:href="@{/admin/user-management}">User Management</a>
+            <a class="nav-button" th:href="@{/admin/movies/add}">Add Movie</a>
+            <a class="nav-button" th:href="@{/admin/movies/all}">View All Movies</a>
+        </div>
+
+        <!-- USER i CRITIC navigacija (sve osim ADMIN-a) -->
+        <div th:if="${#authorization.expression('hasRole(''USER'') or hasRole(''CRITIC'')')
+             and !#authorization.expression('hasRole(''ADMIN'')')}"
+             style="margin-top: 30px;">
+
+            <!-- Ako je CRITIC, idi na critic dashboard -->
+            <a class="nav-button"
+               th:if="${#authorization.expression('hasRole(''CRITIC'')')}"
+               th:href="@{/critic/dashboard}">Dashboard</a>
+
+            <!-- Inače USER ide na user dashboard -->
+            <a class="nav-button"
+               th:if="${#authorization.expression('hasRole(''USER'')') and !#authorization.expression('hasRole(''CRITIC'')')}"
+               th:href="@{/user/dashboard}">Dashboard</a>
+
+            <a class="nav-button" th:href="@{/movies}">Browse Movies</a>
+            <a class="nav-button" th:href="@{/watchlist}">My Watchlist</a>
+
+            <a class="nav-button"
+               th:if="${#authorization.expression('hasRole(''CRITIC'')')}"
+               th:href="@{/critic/reviews/write}">Write Review</a>
+
+            <a class="nav-button"
+               th:if="${#authorization.expression('hasRole(''CRITIC'')')}"
+               th:href="@{/critic/reviews/my-reviews}">My Reviews</a>
+        </div>
+
+
+
+        <!-- Logout -->
+        <form th:action="@{/auth/logout}" method="post" style="margin-top: 40px;">
+            <button type="submit" class="nav-button">Logout</button>
+        </form>
+    </div>
+</div>

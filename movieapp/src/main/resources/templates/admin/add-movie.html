@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dodaj film</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}" />
+    <style>
+        .form-container {
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            border: 2px solid #7a4fca;
+        }
+
+        h1 {
+            color: #d8b9f2;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #d8b9f2;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #2e2e2e;
+            color: #d8b9f2;
+        }
+
+        button {
+            background-color: #7a4fca;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #925eff;
+        }
+
+        .success-message {
+            margin-top: 20px;
+            color: #9affc7;
+        }
+
+        .back-button {
+            margin-top: 30px;
+            display: inline-block;
+            background-color: transparent;
+            color: #d8b9f2;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar navigacija -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Glavni sadržaj -->
+<div class="main-content">
+    <div class="form-container">
+        <h1>Add new movie</h1>
+
+        <form th:action="@{/admin/movies/add}" th:object="${movie}" method="post">
+            <label>Title:</label>
+            <input type="text" th:field="*{title}" required />
+
+            <label>Genre:</label>
+            <input type="text" th:field="*{genre}" required />
+
+            <label>Director:</label>
+            <input type="text" th:field="*{director}" />
+
+            <label>Release date:</label>
+            <input type="number" th:field="*{releaseYear}" />
+
+            <label>Description:</label>
+            <textarea th:field="*{description}"></textarea>
+
+            <label>Poster URL:</label>
+            <input type="text" th:field="*{posterUrl}" placeholder="https://example.com/poster.jpg" />
+
+            <button type="submit">Add movie</button>
+        </form>
+
+        <p th:if="${param.success}" class="success-message">Movie successfully added</p>
+
+        <a th:href="@{/admin/dashboard}" class="back-button">← Return to dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

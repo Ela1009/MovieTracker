@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Write Review</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+    <style>
+        .form-container {
+            max-width: 600px;
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #7a4fca;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #d8b9f2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            color: #ffffff;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select, input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #7a4fca;
+            border-radius: 6px;
+            background-color: #2b2b2b;
+            color: white;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background-color: #7a4fca;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #925eff;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigacija -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Glavni sadržaj -->
+<div class="main-content">
+    <div class="form-container">
+        <h2>Write a Review</h2>
+
+        <form th:action="@{/critic/reviews/submit}" method="post" th:object="${review}">
+            <label for="movie">Movie:</label>
+            <select th:field="*{movie}" id="movie">
+                <option th:each="movie : ${movies}" th:value="${movie.id}" th:text="${movie.title}"></option>
+            </select>
+
+            <label for="rating">Rating (1–10):</label>
+            <input type="number" th:field="*{rating}" min="1" max="10" required id="rating"/>
+
+            <label for="reviewText">Review Text:</label>
+            <textarea th:field="*{reviewText}" rows="8" id="reviewText" required></textarea>
+
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

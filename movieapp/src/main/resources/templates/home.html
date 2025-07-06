@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to MovieApp</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div class="auth-container">
+    <h2>Welcome to MovieApp</h2>
+    <a th:href="@{/auth/register}">
+        <button>Register</button>
+    </a>
+    <a th:href="@{/auth/login}">
+        <button style="margin-top: 10px;">Login</button>
+    </a>
+</div>
+</body>
+</html>
