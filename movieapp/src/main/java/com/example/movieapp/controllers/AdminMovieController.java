@@ -2,12 +2,10 @@ package com.example.movieapp.controllers;
 
 import com.example.movieapp.models.Movie;
 import com.example.movieapp.services.MovieService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,10 +32,25 @@ public class AdminMovieController {
     }
 
     @GetMapping("/all")
-    public String viewAllMovies(Model model) {
-        List<Movie> movies = movieService.getAllMovies();
-        model.addAttribute("movies", movies);
+    public String viewAllMovies(@RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size,
+                                Model model) {
+        Page<Movie> moviePage = movieService.getMoviesPaginated(page, size);
+        model.addAttribute("movies", moviePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", moviePage.getTotalPages());
         return "admin/view-movies";
     }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public List<Movie> searchMovies(@RequestParam(required = false) String title,
+                                    @RequestParam(required = false) String director,
+                                    @RequestParam(required = false) String genre,
+                                    @RequestParam(required = false) Integer year) {
+        return movieService.searchMovies(title, director, genre, year);
+    }
+
+
 }
 

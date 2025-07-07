@@ -23,12 +23,8 @@ public class AdminDashboardController {
     public String adminDashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
         model.addAttribute("username", username);
-
         Optional<Movie> lastAddedMovie = movieService.getLastAddedMovie();
         lastAddedMovie.ifPresent(movie -> model.addAttribute("recentMovie", movie));
-
-
-
         return "admin-dashboard";
     }
 }

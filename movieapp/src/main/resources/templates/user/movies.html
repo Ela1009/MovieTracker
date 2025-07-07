@@ -63,14 +63,22 @@
         .search-form {
             margin-bottom: 20px;
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
         }
 
-        .search-form input[type="text"] {
+        .search-form input[type="text"],
+        .search-form input[type="number"] {
             padding: 8px;
             border-radius: 6px;
             border: 1px solid #ccc;
             flex: 1;
+            background-color: #2a2a2a;
+            color: white;
+        }
+
+        .search-form input::placeholder {
+            color: #bbb;
         }
 
         .search-form button {
@@ -82,8 +90,21 @@
             cursor: pointer;
         }
 
+        .pagination {
+            margin-top: 30px;
+            text-align: center;
+        }
 
+        .pagination a {
+            color: #d8b9f2;
+            margin: 0 5px;
+            text-decoration: none;
+        }
 
+        .pagination .active a {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -95,42 +116,114 @@
 <div class="main-content">
     <h1>All movies</h1>
 
-    <form th:action="@{/movies}" method="get" class="search-form">
-        <input type="text" name="keyword" placeholder="Search by name" th:value="${keyword}" />
-        <input type="text" name="director" placeholder="Search by director" th:value="${director}" />
-        <button type="submit">Search</button>
+    <form class="search-form" onsubmit="return false;">
+        <input type="text" id="titleInput" placeholder="Search by title">
+        <input type="text" id="directorInput" placeholder="Search by director">
+        <input type="text" id="genreInput" placeholder="Search by genre">
+        <input type="number" id="yearInput" placeholder="Search by year">
     </form>
 
+    <div id="movieList">
+        <div th:each="movie : ${movies}" class="movie-card">
+            <img th:src="${movie.posterUrl}" alt="Poster" th:if="${movie.posterUrl != null}" />
+            <div class="movie-details">
+                <h2 th:text="${movie.title}">Title</h2>
+                <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+                <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
+                <p><strong>Release year:</strong> <span th:text="${movie.releaseYear}"></span></p>
 
+                <div class="movie-buttons">
+                    <form th:action="@{'/movies/add-to-watchlist/' + ${movie.id}}" method="post"
+                          th:if="${!watchlistMovies.contains(movie)}">
+                        <button class="watchlist-button" type="submit">Add to Watchlist</button>
+                    </form>
 
-    <div th:each="movie : ${movies}" class="movie-card">
-        <img th:src="${movie.posterUrl}" alt="Poster" />
-        <div class="movie-details">
-            <h2 th:text="${movie.title}">Title</h2>
-            <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
-            <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
-            <p><strong>Release year:</strong> <span th:text="${movie.releaseYear}"></span></p>
-
-
-
-            <div class="movie-buttons">
-                <form th:action="@{'/movies/add-to-watchlist/' + ${movie.id}}" method="post"
-                      th:if="${!watchlistMovies.contains(movie)}" style="display: inline;">
-                    <button class="watchlist-button" type="submit">Add to Watchlist</button>
-                </form>
-
-                <a th:href="@{/critic/reviews/movie/{id}(id=${movie.id})}" class="watchlist-button"
-                   th:classappend="${!watchlistMovies.contains(movie)} ? '' : 'only-button'">
-                    View Reviews
-                </a>
+                    <a th:href="@{/critic/reviews/movie/{id}(id=${movie.id})}" class="watchlist-button">
+                        View Reviews
+                    </a>
+                </div>
             </div>
-
-
-
-
         </div>
     </div>
+
+    <div id="pagination" class="pagination" th:if="${totalPages > 1}">
+        <span th:if="${currentPage > 0}">
+            <a th:href="@{/movies(page=${currentPage - 1})}">← Previous</a>
+        </span>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+              th:classappend="${i == currentPage} ? 'active'">
+            <a th:href="@{/movies(page=${i})}" th:text="${i + 1}"></a>
+        </span>
+
+        <span th:if="${currentPage + 1 < totalPages}">
+            <a th:href="@{/movies(page=${currentPage + 1})}">Next →</a>
+        </span>
+    </div>
 </div>
+
+<!-- JavaScript za live search -->
+<script>
+    const titleInput = document.getElementById('titleInput');
+    const directorInput = document.getElementById('directorInput');
+    const genreInput = document.getElementById('genreInput');
+    const yearInput = document.getElementById('yearInput');
+    const movieList = document.getElementById('movieList');
+    const pagination = document.getElementById('pagination');
+
+    function fetchMovies() {
+        const title = titleInput.value;
+        const director = directorInput.value;
+        const genre = genreInput.value;
+        const year = yearInput.value;
+
+        const hasInput = title || director || genre || year;
+
+        if (!hasInput) {
+            window.location.href = '/movies';
+            return;
+        }
+
+        const params = new URLSearchParams();
+        if (title) params.append('title', title);
+        if (director) params.append('director', director);
+        if (genre) params.append('genre', genre);
+        if (year) params.append('year', year);
+
+        fetch(`/movies/search?${params.toString()}`)
+            .then(response => response.json())
+            .then(movies => {
+                pagination.style.display = 'none';
+
+                if (movies.length === 0) {
+                    movieList.innerHTML = "<p style='color: #ccc;'>No movies found.</p>";
+                    return;
+                }
+
+                movieList.innerHTML = movies.map(movie => `
+                    <div class="movie-card">
+                        ${movie.posterUrl ? `<img src="${movie.posterUrl}" alt="Poster">` : ''}
+                        <div class="movie-details">
+                            <h2>${movie.title}</h2>
+                            <p><strong>Genre:</strong> ${movie.genre}</p>
+                            <p><strong>Director:</strong> ${movie.director}</p>
+                            <p><strong>Release year:</strong> ${movie.releaseYear}</p>
+                            <div class="movie-buttons">
+                                <form action="/movies/add-to-watchlist/${movie.id}" method="post">
+                                    <button class="watchlist-button" type="submit">Add to Watchlist</button>
+                                </form>
+                                <a href="/critic/reviews/movie/${movie.id}" class="watchlist-button">View Reviews</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            });
+    }
+
+    [titleInput, directorInput, genreInput, yearInput].forEach(input => {
+        input.addEventListener('input', fetchMovies);
+    });
+</script>
 
 </body>
 </html>

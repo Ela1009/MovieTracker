@@ -44,7 +44,56 @@
             color: #ffffff;
         }
 
+        .pagination {
+            margin-top: 30px;
+            text-align: center;
+        }
 
+        .pagination a {
+            color: #d8b9f2;
+            margin: 0 5px;
+            text-decoration: none;
+        }
+
+        .pagination .active a {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .button-back {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #7a4fca;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .button-back:hover {
+            background-color: #9c6bff;
+            color: #ffffff;
+        }
+
+        .search-inputs {
+            margin-bottom: 20px;
+        }
+
+        .search-inputs input {
+            padding: 8px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #7a4fca;
+            background-color: #2a2a2a;
+            color: white;
+        }
+
+        .search-inputs input::placeholder {
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
@@ -53,22 +102,91 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 
 <!-- Glavni sadržaj -->
-<div class="main-content">
+<div class="main-content" id="movieContainer">
+    <a th:href="@{/admin/dashboard}" class="button-back">Return to Dashboard</a>
+
     <h1>All movies</h1>
 
-    <div th:each="movie : ${movies}" class="movie-card">
-        <img th:src="${movie.posterUrl}" alt="Poster" th:if="${movie.posterUrl != null}" />
-        <div class="movie-details">
-            <h2 th:text="${movie.title}">Title</h2>
-            <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
-            <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
-            <p><strong>Year:</strong> <span th:text="${movie.releaseYear}"></span></p>
-            <p><strong>Description:</strong> <span th:text="${movie.description}"></span></p>
+    <!-- Search inputs -->
+    <div class="search-inputs">
+        <input type="text" id="titleInput" placeholder="Search by title">
+        <input type="text" id="directorInput" placeholder="Search by director">
+        <input type="text" id="genreInput" placeholder="Search by genre">
+        <input type="number" id="yearInput" placeholder="Search by year">
+    </div>
+
+    <!-- Movies will be dynamically injected here -->
+    <div id="movieList">
+        <div th:each="movie : ${movies}" class="movie-card">
+            <img th:src="${movie.posterUrl}" alt="Poster" th:if="${movie.posterUrl != null}" />
+            <div class="movie-details">
+                <h2 th:text="${movie.title}">Title</h2>
+                <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+                <p><strong>Director:</strong> <span th:text="${movie.director}"></span></p>
+                <p><strong>Year:</strong> <span th:text="${movie.releaseYear}"></span></p>
+                <p><strong>Description:</strong> <span th:text="${movie.description}"></span></p>
+            </div>
         </div>
     </div>
 
-    <a th:href="@{/admin/dashboard}" class="back-button">← Return to dashboard</a>
+    <div class="pagination" th:if="${totalPages > 1}">
+        <span th:if="${currentPage > 0}">
+            <a th:href="@{/admin/movies/all(page=${currentPage - 1})}">← Previous</a>
+        </span>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+              th:classappend="${i == currentPage} ? 'active'">
+            <a th:href="@{/admin/movies/all(page=${i})}" th:text="${i + 1}"></a>
+        </span>
+
+        <span th:if="${currentPage + 1 < totalPages}">
+            <a th:href="@{/admin/movies/all(page=${currentPage + 1})}">Next →</a>
+        </span>
+    </div>
 </div>
+
+<!-- JavaScript for live search -->
+<script>
+    const titleInput = document.getElementById('titleInput');
+    const directorInput = document.getElementById('directorInput');
+    const genreInput = document.getElementById('genreInput');
+    const yearInput = document.getElementById('yearInput');
+    const movieList = document.getElementById('movieList');
+
+    function fetchMovies() {
+        const params = new URLSearchParams();
+        if (titleInput.value) params.append('title', titleInput.value);
+        if (directorInput.value) params.append('director', directorInput.value);
+        if (genreInput.value) params.append('genre', genreInput.value);
+        if (yearInput.value) params.append('year', yearInput.value);
+
+        fetch(`/admin/movies/search?${params.toString()}`)
+            .then(response => response.json())
+            .then(movies => {
+                if (movies.length === 0) {
+                    movieList.innerHTML = "<p style='color: #ccc;'>No movies found.</p>";
+                    return;
+                }
+
+                movieList.innerHTML = movies.map(movie => `
+                    <div class="movie-card">
+                        ${movie.posterUrl ? `<img src="${movie.posterUrl}" alt="Poster">` : ''}
+                        <div class="movie-details">
+                            <h2>${movie.title}</h2>
+                            <p><strong>Genre:</strong> ${movie.genre}</p>
+                            <p><strong>Director:</strong> ${movie.director}</p>
+                            <p><strong>Year:</strong> ${movie.releaseYear}</p>
+                            <p><strong>Description:</strong> ${movie.description}</p>
+                        </div>
+                    </div>
+                `).join('');
+            });
+    }
+
+    [titleInput, directorInput, genreInput, yearInput].forEach(input => {
+        input.addEventListener('input', fetchMovies);
+    });
+</script>
 
 </body>
 </html>
