@@ -98,16 +98,16 @@
 </head>
 <body>
 
-<!-- Navigacija -->
+
 <div th:replace="fragments/navbar :: navbar"></div>
 
-<!-- Glavni sadržaj -->
+
 <div class="main-content" id="movieContainer">
     <a th:href="@{/admin/dashboard}" class="button-back">Return to Dashboard</a>
 
     <h1>All movies</h1>
 
-    <!-- Search inputs -->
+
     <div class="search-inputs">
         <input type="text" id="titleInput" placeholder="Search by title">
         <input type="text" id="directorInput" placeholder="Search by director">
@@ -115,7 +115,7 @@
         <input type="number" id="yearInput" placeholder="Search by year">
     </div>
 
-    <!-- Movies will be dynamically injected here -->
+
     <div id="movieList">
         <div th:each="movie : ${movies}" class="movie-card">
             <img th:src="${movie.posterUrl}" alt="Poster" th:if="${movie.posterUrl != null}" />
@@ -129,23 +129,10 @@
         </div>
     </div>
 
-    <div class="pagination" th:if="${totalPages > 1}">
-        <span th:if="${currentPage > 0}">
-            <a th:href="@{/admin/movies/all(page=${currentPage - 1})}">← Previous</a>
-        </span>
 
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-              th:classappend="${i == currentPage} ? 'active'">
-            <a th:href="@{/admin/movies/all(page=${i})}" th:text="${i + 1}"></a>
-        </span>
-
-        <span th:if="${currentPage + 1 < totalPages}">
-            <a th:href="@{/admin/movies/all(page=${currentPage + 1})}">Next →</a>
-        </span>
-    </div>
 </div>
 
-<!-- JavaScript for live search -->
+
 <script>
     const titleInput = document.getElementById('titleInput');
     const directorInput = document.getElementById('directorInput');

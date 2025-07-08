@@ -45,7 +45,7 @@ public class SecurityConfig {
         AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authBuilder.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
-        return authBuilder.build(); // build se zove na builderu, ne na .passwordEncoder()
+        return authBuilder.build();
     }
 
 

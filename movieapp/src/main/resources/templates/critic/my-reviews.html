@@ -3,6 +3,23 @@
 <head>
     <title>My Reviews</title>
     <link rel="stylesheet" th:href="@{/css/dashboard-layout.css}">
+    <style>
+        .delete-button {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .delete-button:hover {
+            background-color: #e74c3c;
+        }
+
+    </style>
 </head>
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
@@ -13,6 +30,11 @@
         <p><strong>Rating:</strong> <span th:text="${review.rating}"></span>/10</p>
         <p><strong>Text:</strong> <span th:text="${review.reviewText}"></span></p>
         <p><strong>Created at:</strong> <span th:text="${#temporals.format(review.createdAt, 'dd.MM.yyyy. HH:mm')}"></span></p>
+        <form th:action="@{'/critic/reviews/delete/' + ${review.id}}" method="post" style="margin-top: 10px;">
+            <button type="submit" class="delete-button">Delete</button>
+        </form>
+
+
     </div>
 </div>
 </body>

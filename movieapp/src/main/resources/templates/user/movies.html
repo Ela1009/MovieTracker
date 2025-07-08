@@ -146,20 +146,7 @@
         </div>
     </div>
 
-    <div id="pagination" class="pagination" th:if="${totalPages > 1}">
-        <span th:if="${currentPage > 0}">
-            <a th:href="@{/movies(page=${currentPage - 1})}">← Previous</a>
-        </span>
 
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-              th:classappend="${i == currentPage} ? 'active'">
-            <a th:href="@{/movies(page=${i})}" th:text="${i + 1}"></a>
-        </span>
-
-        <span th:if="${currentPage + 1 < totalPages}">
-            <a th:href="@{/movies(page=${currentPage + 1})}">Next →</a>
-        </span>
-    </div>
 </div>
 
 <!-- JavaScript za live search -->
@@ -193,7 +180,9 @@
         fetch(`/movies/search?${params.toString()}`)
             .then(response => response.json())
             .then(movies => {
-                pagination.style.display = 'none';
+                if (pagination) {
+                    pagination.style.display = 'none';
+                }
 
                 if (movies.length === 0) {
                     movieList.innerHTML = "<p style='color: #ccc;'>No movies found.</p>";

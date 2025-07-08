@@ -18,7 +18,7 @@ public class Review {
     private Long id;
 
     @ManyToOne
-    private User critic;  // samo korisnici s rolom CRITIC
+    private User critic;
 
     @ManyToOne
     private Movie movie;

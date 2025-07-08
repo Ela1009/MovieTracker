@@ -32,13 +32,9 @@ public class AdminMovieController {
     }
 
     @GetMapping("/all")
-    public String viewAllMovies(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size,
-                                Model model) {
-        Page<Movie> moviePage = movieService.getMoviesPaginated(page, size);
-        model.addAttribute("movies", moviePage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", moviePage.getTotalPages());
+    public String viewAllMovies(Model model) {
+        List<Movie> movies = movieService.getAllMovies();
+        model.addAttribute("movies", movies);
         return "admin/view-movies";
     }
 
